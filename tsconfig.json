@@ -16,7 +16,8 @@
   },
   "include": [
     "credentials/**/*.ts",
-    "nodes/**/*.ts"
+    "nodes/**/*.ts",
+    "utils/**/*.ts"
   ],
   "exclude": [
     "dist",

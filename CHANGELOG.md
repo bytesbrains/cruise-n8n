@@ -4,6 +4,10 @@ All notable changes to `@bytesbrains/n8n-nodes-cruise` are documented here.
 
 ## Unreleased
 
+- **Cruise Chat Model** sub-node (`lmChatCruise`) via `@n8n/ai-node-sdk` for AI Agent / LangChain
+  chains; shared `utils/cruise-refusal` surfaces `budget_exhausted` / `wallet_exhausted` on both
+  the standalone and Chat Model paths.
+- Repo posture: pin Actions to commit SHAs, add `AGENT.md` and `.editorconfig` (#6).
 - Branded README (Cruise logo, product / npm / demo badges and link tables) matching the other
   public Cruise clients; node icon refreshed.
 - Rename the npm package to `@bytesbrains/n8n-nodes-cruise` (bytesbrains scope + n8n community
