@@ -8,8 +8,10 @@ import type {
 } from "n8n-workflow";
 import { NodeApiError, NodeConnectionTypes, NodeOperationError } from "n8n-workflow";
 
+import { cruiseRefusalMessage } from "../../utils/cruise-refusal";
+
 /**
- * Standalone Cruise chat node. Prefer this (or a future Chat Model sub-node)
+ * Standalone Cruise chat node. Prefer this (or the **Cruise Chat Model** sub-node for AI Agent / chains)
  * over forging the generic OpenAI credential when you want Cruise-named
  * refusals and a fetched model list.
  *
@@ -172,34 +174,3 @@ export class Cruise implements INodeType {
   }
 }
 
-function cruiseRefusalMessage(error: unknown): string {
-  const err = error as {
-    message?: string;
-    description?: string;
-    response?: { body?: { error?: { code?: string; message?: string } } };
-    cause?: { error?: { code?: string; message?: string } };
-  };
-  const code =
-    err.response?.body?.error?.code ??
-    err.cause?.error?.code ??
-    undefined;
-  const msg =
-    err.response?.body?.error?.message ??
-    err.cause?.error?.message ??
-    err.message ??
-    "Cruise request failed";
-
-  if (code === "budget_exhausted") {
-    return `Cruise budget_exhausted: ${msg} (wait for the period reset, or raise the project cap)`;
-  }
-  if (code === "wallet_exhausted") {
-    return `Cruise wallet_exhausted: ${msg} (top-up or credit grant — retrying will not help)`;
-  }
-  if (code === "measurement_stale") {
-    return `Cruise measurement_stale: ${msg} (use a lane, or another model from GET /v1/models)`;
-  }
-  if (code) {
-    return `Cruise ${code}: ${msg}`;
-  }
-  return msg;
-}

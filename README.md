@@ -50,9 +50,9 @@ In **self-hosted** n8n: **Settings → Community Nodes → Install**, then enter
 
 1. Create a **BytesBrains Cruise API** credential — paste your `cru_…` key and set the base URL
    (include `/v1`).
-2. Add the **Cruise** node to a workflow.
-3. Set **Model** to a Cruise id from `GET /v1/models` (e.g. `bb/chat-assistant` or
-   `bb/agentic-coding`).
+2. For **AI Agent / LangChain chains**, add **Cruise Chat Model** as the language-model sub-node
+   and set **Model** to a Cruise id (e.g. `bb/agentic-coding`).
+3. For a simple one-shot completion, add the **Cruise** node instead.
 4. Run.
 
 Never put the key in a synced settings file or a committed workflow JSON — use n8n credentials.
@@ -86,8 +86,8 @@ n8n’s built-in OpenAI credential already has a Base URL field. Point it at Cru
 | **Base URL** | `https://cruise.bytesbrains.net/v1` (or the demo host) |
 | **Model** | a Cruise id from `GET /v1/models` (expression mode if the dropdown misbehaves) |
 
-This package exists so Cruise shows up **by name**, with refusals surfaced as Cruise codes rather
-than a generic OpenAI quota error.
+This package exists so Cruise shows up **by name** — including as a **Cruise Chat Model** on AI
+Agent workflows — with refusals surfaced as Cruise codes rather than a generic OpenAI quota error.
 
 ---
 
