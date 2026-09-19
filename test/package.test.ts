@@ -7,6 +7,7 @@ describe("community package contract", () => {
     keywords: string[];
     n8n?: {
       n8nNodesApiVersion?: number;
+      aiNodeSdkVersion?: number;
       nodes?: string[];
       credentials?: string[];
     };
@@ -28,6 +29,11 @@ describe("community package contract", () => {
       expect(path.startsWith("dist/")).toBe(true);
     }
   });
+
+  it("declares aiNodeSdkVersion beside the Chat Model node", () => {
+    expect(pkg.n8n?.aiNodeSdkVersion).toBe(1);
+    expect(pkg.n8n?.nodes?.some((p) => p.includes("LmChatCruise"))).toBe(true);
+  });
 });
 
 describe("Cruise node surface", () => {
@@ -38,6 +44,19 @@ describe("Cruise node surface", () => {
     expect(node.description.credentials?.[0]?.name).toBe("cruiseApi");
     const model = node.description.properties.find((p) => p.name === "model");
     expect(model).toBeDefined();
+  });
+
+  it("exports a Chat Model sub-node for AI Agent / chains", async () => {
+    const { LmChatCruise } = await import("../nodes/LmChatCruise/LmChatCruise.node.ts");
+    const node = new LmChatCruise();
+    expect(node.description.name).toBe("lmChatCruise");
+    expect(node.description.credentials?.[0]?.name).toBe("cruiseApi");
+    expect(typeof node.supplyData).toBe("function");
+    // Shape the AI Agent cluster expects for a language-model sub-node.
+    const { NodeConnectionTypes } = await import("n8n-workflow");
+    expect(node.description.outputs).toEqual([NodeConnectionTypes.AiLanguageModel]);
+    expect(node.description.outputNames).toEqual(["Model"]);
+    expect(node.description.inputs).toEqual([]);
   });
 
   it("exports a credential that tests GET /models", async () => {

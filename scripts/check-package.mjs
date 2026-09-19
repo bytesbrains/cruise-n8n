@@ -21,6 +21,14 @@ if (!pkg.n8n || typeof pkg.n8n !== "object") {
   if (!Number.isInteger(pkg.n8n.n8nNodesApiVersion) || pkg.n8n.n8nNodesApiVersion < 1) {
     failures.push("n8n.n8nNodesApiVersion must be a positive integer");
   }
+  if (pkg.n8n.aiNodeSdkVersion != null) {
+    if (!Number.isInteger(pkg.n8n.aiNodeSdkVersion) || pkg.n8n.aiNodeSdkVersion < 1) {
+      failures.push("n8n.aiNodeSdkVersion must be a positive integer when set");
+    }
+    if (!pkg.peerDependencies?.["@n8n/ai-node-sdk"]) {
+      failures.push('aiNodeSdkVersion requires peerDependencies["@n8n/ai-node-sdk"]');
+    }
+  }
   if (!Array.isArray(pkg.n8n.nodes) || pkg.n8n.nodes.length === 0) {
     failures.push("n8n.nodes must be a non-empty array");
   } else {

@@ -1,6 +1,6 @@
 {
-  "name": "n8n-nodes-bytesbrains-cruise",
-  "version": "0.0.1",
+  "name": "@bytesbrains/n8n-nodes-cruise",
+  "version": "0.1.0",
   "description": "BytesBrains Cruise community nodes for n8n — OpenAI-compatible chat through Cruise keys, budgets, and lanes.",
   "license": "SEE LICENSE IN LICENSE.txt",
   "homepage": "https://bytesbrains.com/cruise",
@@ -40,24 +40,31 @@
   ],
   "n8n": {
     "n8nNodesApiVersion": 1,
+    "aiNodeSdkVersion": 1,
     "credentials": [
       "dist/credentials/CruiseApi.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/Cruise/Cruise.node.js"
+      "dist/nodes/Cruise/Cruise.node.js",
+      "dist/nodes/LmChatCruise/LmChatCruise.node.js"
     ]
   },
   "publishConfig": {
     "access": "public"
   },
   "devDependencies": {
-    "@types/node": "^22.15.30",
-    "n8n-workflow": "^1.82.0",
-    "typescript": "^5.8.3",
-    "vitest": "^3.2.4"
+    "@n8n/ai-node-sdk": "^0.29.5",
+    "@types/node": "^26.6.1",
+    "n8n-workflow": "2.39.3",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.1"
   },
   "peerDependencies": {
+    "@n8n/ai-node-sdk": "*",
     "n8n-workflow": "*"
+  },
+  "overrides": {
+    "n8n-workflow": "2.39.3"
   },
   "engines": {
     "node": ">=20"
