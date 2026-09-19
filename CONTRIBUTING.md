@@ -1,7 +1,7 @@
 # Contributing
 
 Thanks for caring about the n8n client for Cruise. This repo is the public source of truth for
-the `n8n-nodes-bytesbrains-cruise` community package.
+the `@bytesbrains/n8n-nodes-cruise` community package.
 
 ## Ground rules
 

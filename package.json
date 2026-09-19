@@ -1,5 +1,5 @@
 {
-  "name": "n8n-nodes-bytesbrains-cruise",
+  "name": "@bytesbrains/n8n-nodes-cruise",
   "version": "0.0.1",
   "description": "BytesBrains Cruise community nodes for n8n — OpenAI-compatible chat through Cruise keys, budgets, and lanes.",
   "license": "SEE LICENSE IN LICENSE.txt",
