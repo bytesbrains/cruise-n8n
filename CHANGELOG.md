@@ -4,6 +4,12 @@ All notable changes to `@bytesbrains/n8n-nodes-cruise` are documented here.
 
 ## Unreleased
 
+## 0.1.1 — 2026-09-19
+
+- Fix release workflow: upgrade npm to 11.5.1 only immediately before `npm publish`,
+  so Vitest/Rolldown optional native bindings are not dropped by npm's optional-deps
+  bug during `npm ci` / test (v0.1.0 tag publish failed on that).
+
 ## 0.1.0 — 2026-09-19
 
 - **Cruise Chat Model** sub-node (`lmChatCruise`) via `@n8n/ai-node-sdk` for AI Agent / LangChain
