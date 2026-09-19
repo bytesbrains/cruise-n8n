@@ -52,6 +52,11 @@ describe("Cruise node surface", () => {
     expect(node.description.name).toBe("lmChatCruise");
     expect(node.description.credentials?.[0]?.name).toBe("cruiseApi");
     expect(typeof node.supplyData).toBe("function");
+    // Shape the AI Agent cluster expects for a language-model sub-node.
+    const { NodeConnectionTypes } = await import("n8n-workflow");
+    expect(node.description.outputs).toEqual([NodeConnectionTypes.AiLanguageModel]);
+    expect(node.description.outputNames).toEqual(["Model"]);
+    expect(node.description.inputs).toEqual([]);
   });
 
   it("exports a credential that tests GET /models", async () => {

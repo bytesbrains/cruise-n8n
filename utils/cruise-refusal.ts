@@ -26,30 +26,22 @@ export function extractCruiseCode(error: unknown): string | undefined {
   if (!error || typeof error !== "object") return undefined;
   const err = error as Record<string, unknown>;
 
-  const fromBody = nestedCode(err.response) ?? nestedCode(err.cause) ?? nestedCode(err.error);
-  if (fromBody) return fromBody;
+  const fromBody =
+    nestedField(err.response, "code") ??
+    nestedField(err.cause, "code") ??
+    nestedField(err.error, "code");
+  if (typeof fromBody === "string") return fromBody;
 
   if (typeof err.code === "string" && isCruiseCode(err.code)) return err.code;
 
-  // Some OpenAI SDK paths embed the body as JSON in message / error.error.message.
+  // Some OpenAI SDK paths embed the body as text in message / description.
   const haystack = [err.message, err.description]
     .filter((v): v is string => typeof v === "string")
     .join("\n");
   for (const code of CRUISE_CODES) {
-    if (haystack.includes(code)) return code;
+    if (new RegExp(`\\b${code}\\b`).test(haystack)) return code;
   }
   return undefined;
-}
-
-function nestedCode(value: unknown): string | undefined {
-  if (!value || typeof value !== "object") return undefined;
-  const obj = value as Record<string, unknown>;
-  const body = obj.body ?? obj.error ?? obj;
-  if (!body || typeof body !== "object") return undefined;
-  const err = (body as Record<string, unknown>).error ?? body;
-  if (!err || typeof err !== "object") return undefined;
-  const code = (err as Record<string, unknown>).code;
-  return typeof code === "string" ? code : undefined;
 }
 
 function extractCruiseMessage(error: unknown): string {
@@ -58,22 +50,28 @@ function extractCruiseMessage(error: unknown): string {
   }
   const err = error as Record<string, unknown>;
   const nested =
-    nestedMessage(err.response) ?? nestedMessage(err.cause) ?? nestedMessage(err.error);
-  if (nested) return nested;
+    nestedField(err.response, "message") ??
+    nestedField(err.cause, "message") ??
+    nestedField(err.error, "message");
+  if (typeof nested === "string") return nested;
   if (typeof err.message === "string" && err.message.length > 0) return err.message;
   if (typeof err.description === "string" && err.description.length > 0) return err.description;
   return "Cruise request failed";
 }
 
-function nestedMessage(value: unknown): string | undefined {
+/**
+ * Walk the shapes OpenAI / n8n helpers put around an error body:
+ * `{ body: { error: { code, message } } }` or `{ error: { … } }` or the object itself.
+ */
+function nestedField(value: unknown, field: "code" | "message"): string | undefined {
   if (!value || typeof value !== "object") return undefined;
   const obj = value as Record<string, unknown>;
   const body = obj.body ?? obj.error ?? obj;
   if (!body || typeof body !== "object") return undefined;
   const err = (body as Record<string, unknown>).error ?? body;
   if (!err || typeof err !== "object") return undefined;
-  const message = (err as Record<string, unknown>).message;
-  return typeof message === "string" ? message : undefined;
+  const found = (err as Record<string, unknown>)[field];
+  return typeof found === "string" ? found : undefined;
 }
 
 const CRUISE_CODES = [

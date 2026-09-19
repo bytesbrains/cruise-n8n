@@ -25,4 +25,8 @@ describe("cruiseRefusalMessage", () => {
       "budget_exhausted",
     );
   });
+
+  it("does not treat a code as a substring of unrelated text", () => {
+    expect(extractCruiseCode({ message: "not_budget_exhausted_anymore" })).toBeUndefined();
+  });
 });

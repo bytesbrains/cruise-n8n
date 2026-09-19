@@ -5,7 +5,7 @@ import type {
   ISupplyDataFunctions,
   SupplyData,
 } from "n8n-workflow";
-import { NodeConnectionTypes } from "n8n-workflow";
+import { NodeConnectionTypes, NodeOperationError } from "n8n-workflow";
 
 import { cruiseRefusalMessage, extractCruiseCode } from "../../utils/cruise-refusal";
 
@@ -13,8 +13,9 @@ import { cruiseRefusalMessage, extractCruiseCode } from "../../utils/cruise-refu
  * Chat Model sub-node for AI Agent / LangChain chains. Speaks OpenAI chat
  * completions against the Cruise base URL so agents pick Cruise by name.
  *
- * Refusals: `onFailedAttempt` rewrites the error message when Cruise's
- * `error.code` is present — budget vs wallet share HTTP 429 on purpose.
+ * Refusals: `onFailedAttempt` rethrows with a Cruise-named message (and
+ * `cause`) when `error.code` is present. Throwing aborts LangChain retries —
+ * required for wallet_exhausted / budget_exhausted, which must not be retried.
  */
 export class LmChatCruise implements INodeType {
   description: INodeTypeDescription = {
@@ -54,7 +55,7 @@ export class LmChatCruise implements INodeType {
     properties: [
       {
         displayName:
-          'Connect this to an AI Agent or chain. Model ids are Cruise ids from GET /v1/models (e.g. bb/agentic-coding) — not provider ids like gpt-4o. Spending refusals share HTTP 429; read error.code (budget_exhausted vs wallet_exhausted).',
+          "Connect this to an AI Agent or chain. Model ids are Cruise ids from GET /v1/models (e.g. bb/agentic-coding) — not provider ids like gpt-4o. Spending refusals share HTTP 429; read error.code (budget_exhausted vs wallet_exhausted).",
         name: "notice",
         type: "notice",
         default: "",
@@ -104,7 +105,7 @@ export class LmChatCruise implements INodeType {
             type: "number",
             default: 2,
             description:
-              "Retries on transient failures. Do not raise this hoping to clear wallet_exhausted — that never helps.",
+              "Retries on transient failures. Cruise spending refusals abort retries via onFailedAttempt — raising this will not clear wallet_exhausted.",
           },
         ],
       },
@@ -123,6 +124,7 @@ export class LmChatCruise implements INodeType {
 
     const baseUrl = String(credentials.baseUrl ?? "").replace(/\/+$/, "");
     const apiKey = String(credentials.apiKey ?? "");
+    assertCruiseBaseUrl.call(this, baseUrl);
 
     return supplyModel(this, {
       type: "openai",
@@ -137,9 +139,42 @@ export class LmChatCruise implements INodeType {
       useResponsesApi: false,
       supportsStrictToolCalling: false,
       onFailedAttempt: (error: unknown) => {
+        // Return = leave the original error to LangChain's retry policy.
+        // Throw = abort retries (p-retry) and surface our message. Spending
+        // refusals must abort — retrying wallet_exhausted never helps.
         if (!extractCruiseCode(error)) return;
-        throw new Error(cruiseRefusalMessage(error));
+        throw new Error(cruiseRefusalMessage(error), { cause: error });
       },
     });
+  }
+}
+
+function assertCruiseBaseUrl(this: ISupplyDataFunctions, baseUrl: string): void {
+  if (baseUrl === "") {
+    throw new NodeOperationError(
+      this.getNode(),
+      "Cruise Base URL is empty. Set the cruiseApi credential to https://cruise.bytesbrains.net/v1 (or the demo host).",
+    );
+  }
+  let parsed: URL;
+  try {
+    parsed = new URL(baseUrl);
+  } catch {
+    throw new NodeOperationError(
+      this.getNode(),
+      `Cruise Base URL is not a valid URL: ${baseUrl}`,
+    );
+  }
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+    throw new NodeOperationError(
+      this.getNode(),
+      `Cruise Base URL must be http(s): ${baseUrl}`,
+    );
+  }
+  if (!parsed.pathname.replace(/\/+$/, "").endsWith("/v1")) {
+    throw new NodeOperationError(
+      this.getNode(),
+      `Cruise Base URL must include /v1 (got ${baseUrl}). Example: https://cruise.bytesbrains.net/v1`,
+    );
   }
 }

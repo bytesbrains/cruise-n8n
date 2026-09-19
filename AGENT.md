@@ -44,6 +44,9 @@ CI jobs `check` (secrets scan) and `plugin` (build/test) run on every PR and on 
   `measurement_stale`, …), not on HTTP status alone. Shared helpers live in `utils/`.
 - Package name must stay `@bytesbrains/n8n-nodes-cruise` (or another `@scope/n8n-nodes-*`) —
   n8n Community Nodes reject names without the `n8n-nodes-` segment.
+- `@n8n/ai-node-sdk` stays a **peerDependency** (and `n8n.aiNodeSdkVersion: 1`): n8n hosts
+  supply it at runtime. Bump `aiNodeSdkVersion` when adopting a new SDK major — do not invent
+  a parallel versioning scheme.
 - A release is a **tag on `main`**, not a merge. Workflow `release` publishes to npm on `v*` tags
   that point at `main` (`npm run pack:check` first). Never create, move or delete a `v*` tag
   unless asked — see `CONTRIBUTING.md`.
