@@ -7,7 +7,7 @@ ledger of every request. This repository is the **n8n community node** for that 
 | | |
 | --- | --- |
 | **Product** | [bytesbrains.com/cruise](https://bytesbrains.com/cruise) |
-| **npm** | `n8n-nodes-bytesbrains-cruise` (Community Nodes install) |
+| **npm** | `@bytesbrains/n8n-nodes-cruise` (Community Nodes install) |
 | **Gateway** | `https://cruise.bytesbrains.net/v1` |
 | **Demo** | `https://cruise-demo.bytesbrains.net/v1` |
 
@@ -16,7 +16,7 @@ ledger of every request. This repository is the **n8n community node** for that 
 In self-hosted n8n: **Settings → Community Nodes → Install**, then enter:
 
 ```text
-n8n-nodes-bytesbrains-cruise
+@bytesbrains/n8n-nodes-cruise
 ```
 
 Create a **BytesBrains Cruise API** credential with your `cru_…` key and base URL. Add the
