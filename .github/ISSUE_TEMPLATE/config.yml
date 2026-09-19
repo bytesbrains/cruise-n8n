@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: BytesBrains Cruise product
+    url: https://bytesbrains.com/cruise
+    about: Product site and demo key signup — not for this repo's bug tracker.
+  - name: n8n model providers docs
+    url: https://docs.n8n.ai/concepts/model-providers
+    about: Upstream n8n provider configuration reference.

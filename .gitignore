@@ -1,0 +1,17 @@
+# Secrets never enter this repo (Cruise keys, npm tokens, etc.).
+# Keep them in n8n credentials, the environment, or a local .env — never in git.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+
+*.log
+.DS_Store
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+*.tgz
+reports/

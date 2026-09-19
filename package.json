@@ -1,0 +1,65 @@
+{
+  "name": "n8n-nodes-bytesbrains-cruise",
+  "version": "0.0.1",
+  "description": "BytesBrains Cruise community nodes for n8n — OpenAI-compatible chat through Cruise keys, budgets, and lanes.",
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "homepage": "https://bytesbrains.com/cruise",
+  "author": {
+    "name": "BytesBrains",
+    "email": "hello@bytesbrains.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bytesbrains/cruise-n8n.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bytesbrains/cruise-n8n/issues"
+  },
+  "keywords": [
+    "n8n",
+    "n8n-community-node-package",
+    "cruise",
+    "bytesbrains",
+    "llm",
+    "openai-compatible",
+    "ai-agent"
+  ],
+  "scripts": {
+    "prepare": "git config core.hooksPath .githooks || true",
+    "build": "tsc -p tsconfig.json && node scripts/copy-static.mjs",
+    "prepack": "npm run build",
+    "pack:check": "node scripts/pack-check.mjs",
+    "test": "vitest run",
+    "check:package": "node scripts/check-package.mjs",
+    "secrets:scan": "gitleaks detect --source . --redact --no-banner --config .gitleaks.toml"
+  },
+  "files": [
+    "dist",
+    "LICENSE.txt",
+    "README.md"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/CruiseApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/Cruise/Cruise.node.js"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.30",
+    "n8n-workflow": "^1.82.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
