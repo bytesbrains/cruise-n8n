@@ -1,6 +1,6 @@
 {
   "name": "@bytesbrains/n8n-nodes-cruise",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "BytesBrains Cruise community nodes for n8n — OpenAI-compatible chat through Cruise keys, budgets, and lanes.",
   "license": "SEE LICENSE IN LICENSE.txt",
   "homepage": "https://bytesbrains.com/cruise",
