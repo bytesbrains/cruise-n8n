@@ -48,8 +48,9 @@ jobs:
           cache: npm
           registry-url: https://registry.npmjs.org
 
-      - name: Ensure npm CLI supports OIDC trusted publishing
-        run: npm install -g npm@11.5.1
+      # Do NOT upgrade npm before `npm ci` / test: npm 11+ has known optional-deps
+      # bugs that drop Vitest/Rolldown native bindings (npm/cli#4828). Upgrade only
+      # immediately before `npm publish`, which needs ≥11.5.1 for OIDC.
 
       - name: Install gitleaks CLI
         run: |
@@ -121,6 +122,8 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
+          # OIDC trusted publishing needs npm ≥11.5.1 — upgrade here, after tests.
+          npm install -g npm@11.5.1
           for f in .npmrc "$HOME/.npmrc"; do
             if [ -f "$f" ]; then
               sed -i.bak -E \
